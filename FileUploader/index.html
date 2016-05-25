@@ -12,19 +12,18 @@
 
     <div class="container">
         <div class="row">
-            <label for="fileUpload">Select File to Upload: </label>
-            <input id="fileUpload" type="file" />
-
-            <input id="btnUploadFile" type="button" value="Upload File" />
+            <div>
+                <input type="file" title="Search for a file to add" class="btn btn-defaul" name="upload" id="fileUpload">
+                <button id="submitbtn" class="btn btn-default btn-file">Загрузить</button>
+            </div>
         </div>
-
 
     </div>
 
     <script type="text/javascript">
         $(document).ready(function () {
 
-            $('#btnUploadFile').on('click', function () {         
+            $('#submitbtn').on('click', function () {
                 var data = new FormData();
                 var files = $("#fileUpload").get(0).files;
 
@@ -36,7 +35,7 @@
                 // Make Ajax request with the contentType = false, and procesDate = false
                 var ajaxRequest = $.ajax({
                     type: "POST",
-                    url: "/api/fileupload/uploadfile",
+                    url: "http://localhost:51831/api/fileupload/uploadfile",
                     contentType: false,
                     processData: false,
                     data: data
