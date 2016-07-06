@@ -11,39 +11,127 @@
 <body>
 
     <div class="container">
-        <div class="row">
-            <div>
-                <input type="file" title="Search for a file to add" class="btn btn-defaul" name="upload" id="fileUpload">
+        <h2>Vertical (basic) form</h2>
+
+        <form id="upload_form" role="form" enctype="multipart/form-data">
+
+            <div class="form-group">
+                <label for="userNameid">User Name </label>
+                <input type="text" class="form-control" id="userNameid" name="userName" value="userName" />
+            </div>
+
+            <div class="form-group">
+                <input type="file" multiple size="50" title="Search for a file to add" class="file" name="upload" id="fileUpload">
+        
+
+            </div>
+
+            <div class="form-group">
+                <!--<progress max=100  id="myIndicator" class="form-control"></progress>             
+                <label for="userNameid" id="progress_percent">0</label>-->
+
+                <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:70%" id="progress_percent">
+                    70%
+                </div>
+            </div>
+            <div class="form-group">
+                <button  class="btn btn-default" type="reset">Очистить</button>
                 <button id="submitbtn" class="btn btn-default btn-file">Загрузить</button>
             </div>
-        </div>
 
+</form>
     </div>
+
 
     <script type="text/javascript">
         $(document).ready(function () {
 
-            $('#submitbtn').on('click', function () {
-                var data = new FormData();
-                var files = $("#fileUpload").get(0).files;
+            $('#submitbtn').on('click', function (e) {
+                e.preventDefault();
 
-                // Add the uploaded image content to the form data collection
+                var myFormData = new FormData();
+                var files = $("#fileUpload").get(0).files;
                 if (files.length > 0) {
-                    data.append("UploadedImage", files[0]);
+                    myFormData.append("UploadedImage", files[0]);
                 }
 
-                // Make Ajax request with the contentType = false, and procesDate = false
-                var ajaxRequest = $.ajax({
-                    type: "POST",
-                    url: "http://localhost:51831/api/fileupload/uploadfile",
-                    contentType: false,
-                    processData: false,
-                    data: data
+                var userNameItem = document.getElementById('userNameid');
+                myFormData.append("userName", userNameItem.value);
+
+                $.ajax({
+                    url: "api/fileupload/uploadfile",
+                    type: 'POST',
+                    processData: false, // important
+                    contentType: false, // important
+                    data: myFormData,
+                    success: function () {
+                      
+                        console.log('file was upload');
+                    },
+                    error: function (xhr, status, p3) {
+                        console.log(p3);
+                    }
+                    , complete: function () {
+                        // деактивация индикатора
+                        $('#myIndicator').removeClass('active');
+                    }
+                    ,xhr: function() {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.addEventListener('progress', progress, false);
+                    } else {
+                        console.log('Upload progress is not supported.');
+                    }
+
+                    myXhr.upload.onload = function () {
+                        console.log('Данные полностью загружены на сервер!');
+                    }
+
+                    myXhr.upload.onerror = function () {
+                        console.log('Произошла ошибка при загрузке данных на сервер!');
+                    }
+
+                    return myXhr;
+                }
                 });
 
-                ajaxRequest.done(function (xhr, textStatus) {
-                    // Do other operation
-                });
+                function progress(e) {
+
+                    console.log('Загружено на сервер ' + e.loaded + ' байт из ' + e.total);
+
+                    if (e.lengthComputable) {
+                        $('#progress_percent').text(Math.floor((e.loaded * 100) / e.total));
+                        $('progress').attr({ value: e.loaded, max: e.total });
+                    }
+                }
+
+                //var data = new FormData();
+                //var files = $("#fileUpload").get(0).files;
+
+                //// Add the uploaded image content to the form data collection
+                //if (files.length > 0) {
+                //    data.append("UploadedImage", files[0]);
+                //}
+
+                //// Make Ajax request with the contentType = false, and procesDate = false
+                //var ajaxRequest = $.ajax({
+                //    type: "POST",
+                //    url: "api/fileupload/uploadfile",
+                //    contentType: false,
+                //    processData: false,
+                //    data: data,
+                //    success: function () {
+
+                //        alert('true');
+                //    }
+                //    , error: function (xhr, status, p3) {
+                //        alert('error');
+                //    }
+                //});
+
+                //ajaxRequest.done(function (xhr, textStatus) {
+                //    // Do other operation
+                //});
             });
         });
     </script>
