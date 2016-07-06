@@ -231,6 +231,9 @@ FakesAssemblies/
 **/*.DesktopClient/GeneratedArtifacts
 **/*.DesktopClient/ModelManifest.xml
 **/*.Server/GeneratedArtifacts
+
+
+
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
 
@@ -243,3 +246,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+/FileUploader/Files
+/FileUploader/UploadedFiles
