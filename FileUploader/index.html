@@ -4,8 +4,13 @@
     <title></title>
     <meta charset="utf-8" />
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+
+    <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
 
 </head>
 <body>
@@ -22,35 +27,97 @@
 
             <div class="form-group">
                 <input type="file" multiple size="50" title="Search for a file to add" class="file" name="upload" id="fileUpload">
-        
+
 
             </div>
 
-            <div class="form-group">
-                <!--<progress max=100  id="myIndicator" class="form-control"></progress>             
-                <label for="userNameid" id="progress_percent">0</label>-->
+            <div class="form-group">         
 
-                <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:70%" id="progress_percent">
-                    70%
+                <div class="progress  progress-striped" id="dbprogressload">
+                    <div class="progress-bar progress-bar-info"" role="progressbar" aria-valuenow="0" aria-valuemin="0"  id="progress" aria-valuemax="100" >
+                        <span class="sr-only"></span>
+                    </div>
                 </div>
+             
+
             </div>
             <div class="form-group">
-                <button  class="btn btn-default" type="reset">Очистить</button>
+                <button class="btn btn-default" type="reset">Очистить</button>
                 <button id="submitbtn" class="btn btn-default btn-file">Загрузить</button>
             </div>
 
-</form>
+        </form>
     </div>
 
+    <div class="row">
+
+        <div class="progress progress-striped active">
+            <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="40"
+                 aria-valuemin="0" aria-valuemax="100" style="width:40%"  id="tstprogress">
+                <p class="progress-bar-val">
+                    40% Complete (success)
+                </p>
+                    </div>
+        </div>
+    </div>
+    <button class="btn btn-default"  id="btnReset">Очистить</button>
+
+    <style>
+        .progress-bar {
+  -webkit-transition: width 1.5s ease-in-out;
+  transition: width 1.5s ease-in-out;
+}
+h3 {
+  font-weight: bold;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+    </style>
 
     <script type="text/javascript">
-        $(document).ready(function () {
 
+        function clearProgressBar() {
+            $('#tstprogress').css('width', 10 + '%').attr('aria-valuenow', 10).text(10);
+        }
+
+        function setProgressBarValue(value,text) {
+            $('#tstprogress').css('width', value + '%').attr('aria-valuenow', value).text(text+'%');
+        }
+
+        $(document).ready(function () {            
+
+
+
+           // $("#tstprogress").addClass('animate');
+
+            $("#btnReset").on('click', function (e) {
+                console.log('reset');
+                setProgressBarValue(0, '');
+                $("#tstprogress").fadeOut(2000);
+                $("#dbprogressload").fadeOut(2000);
+            });
+
+            //$('.progress-bar').each(function () {
+            //    var bar_value = $(this).attr('aria-valuenow') + '%';
+            //    $(this).animate({ width: bar_value }, { duration: 2000, easing: 'easeOutCirc' });
+            //});
+
+
+            $("#fileUpload").change(function () {
+                console.log('change');
+            });
+            
             $('#submitbtn').on('click', function (e) {
                 e.preventDefault();
 
+                $("#files").append($("#fileUploadProgressTemplate").tmpl());
+
+
+                $("#progress").addClass('animate');
+
                 var myFormData = new FormData();
                 var files = $("#fileUpload").get(0).files;
+
                 if (files.length > 0) {
                     myFormData.append("UploadedImage", files[0]);
                 }
@@ -65,8 +132,11 @@
                     contentType: false, // important
                     data: myFormData,
                     success: function () {
-                      
+
                         console.log('file was upload');
+
+                        $("#progressouter").removeClass("active");
+                        $("#progress").html("Done");
                     },
                     error: function (xhr, status, p3) {
                         console.log(p3);
@@ -75,64 +145,36 @@
                         // деактивация индикатора
                         $('#myIndicator').removeClass('active');
                     }
-                    ,xhr: function() {
-                    var myXhr = $.ajaxSettings.xhr();
-                    if (myXhr.upload) {
-                        myXhr.upload.addEventListener('progress', progress, false);
-                    } else {
-                        console.log('Upload progress is not supported.');
+                    , xhr: function () {
+                        var myXhr = $.ajaxSettings.xhr();
+                        if (myXhr.upload) {
+                            myXhr.upload.addEventListener('progress', progress, false);
+                        } else {
+                            console.log('Upload progress is not supported.');
+                        }
+
+                        myXhr.upload.onload = function () {
+                            console.log('Данные полностью загружены на сервер!');
+                        }
+
+                        myXhr.upload.onerror = function () {
+                            console.log('Произошла ошибка при загрузке данных на сервер!');
+                        }
+
+                        return myXhr;
                     }
-
-                    myXhr.upload.onload = function () {
-                        console.log('Данные полностью загружены на сервер!');
-                    }
-
-                    myXhr.upload.onerror = function () {
-                        console.log('Произошла ошибка при загрузке данных на сервер!');
-                    }
-
-                    return myXhr;
-                }
-                });
-
-                function progress(e) {
-
-                    console.log('Загружено на сервер ' + e.loaded + ' байт из ' + e.total);
-
-                    if (e.lengthComputable) {
-                        $('#progress_percent').text(Math.floor((e.loaded * 100) / e.total));
-                        $('progress').attr({ value: e.loaded, max: e.total });
-                    }
-                }
-
-                //var data = new FormData();
-                //var files = $("#fileUpload").get(0).files;
-
-                //// Add the uploaded image content to the form data collection
-                //if (files.length > 0) {
-                //    data.append("UploadedImage", files[0]);
-                //}
-
-                //// Make Ajax request with the contentType = false, and procesDate = false
-                //var ajaxRequest = $.ajax({
-                //    type: "POST",
-                //    url: "api/fileupload/uploadfile",
-                //    contentType: false,
-                //    processData: false,
-                //    data: data,
-                //    success: function () {
-
-                //        alert('true');
-                //    }
-                //    , error: function (xhr, status, p3) {
-                //        alert('error');
-                //    }
-                //});
-
-                //ajaxRequest.done(function (xhr, textStatus) {
-                //    // Do other operation
-                //});
+                });              
             });
+            function progress(event) {
+                if (event.lengthComputable) {
+
+                    var percent = Math.floor((event.loaded * 100) / event.total);
+                    console.log(percent + '%');
+
+                    $('#progress').css('width', percent + '%').attr('aria-valuenow', percent).text(percent);
+                }
+            }
+
         });
     </script>
 
