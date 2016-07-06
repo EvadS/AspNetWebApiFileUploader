@@ -85,6 +85,7 @@
     <Content Include="Global.asax" />
     <Content Include="HtmlPage1.html" />
     <Content Include="index.html" />
+    <Content Include="JS\ValidationFileExtension.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

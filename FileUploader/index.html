@@ -12,6 +12,8 @@
 
 
 
+    <script src="JS/ValidationFileExtension.js"></script>
+
 </head>
 <body>
 
@@ -26,76 +28,41 @@
             </div>
 
             <div class="form-group">
-                <input type="file" multiple size="50" title="Search for a file to add" class="file" name="upload" id="fileUpload">
-
-
+                <input type="file" multiple size="50" title="Search for a file to add" class="file" name="upload" id="fileUpload" onchange="ValidateSingleInput(this);">
             </div>
 
-            <div class="form-group">         
-
-                <div class="progress  progress-striped" id="dbprogressload">
-                    <div class="progress-bar progress-bar-info"" role="progressbar" aria-valuenow="0" aria-valuemin="0"  id="progress" aria-valuemax="100" >
-                        <span class="sr-only"></span>
+            <div class="form-group"> 
+                <div class="progress progress-striped active" id="dbprogressload">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"  id="progress" aria-valuemax="100" >                   
                     </div>
                 </div>
-             
-
             </div>
+
             <div class="form-group">
-                <button class="btn btn-default" type="reset">Очистить</button>
+                <button class="btn btn-default" id="btnreset" type="reset" ">Очистить</button>
                 <button id="submitbtn" class="btn btn-default btn-file">Загрузить</button>
             </div>
 
         </form>
     </div>
 
-    <div class="row">
 
-        <div class="progress progress-striped active">
-            <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="40"
-                 aria-valuemin="0" aria-valuemax="100" style="width:40%"  id="tstprogress">
-                <p class="progress-bar-val">
-                    40% Complete (success)
-                </p>
-                    </div>
-        </div>
-    </div>
-    <button class="btn btn-default"  id="btnReset">Очистить</button>
-
-    <style>
-        .progress-bar {
-  -webkit-transition: width 1.5s ease-in-out;
-  transition: width 1.5s ease-in-out;
-}
-h3 {
-  font-weight: bold;
-  font-size: 12px;
-  text-transform: uppercase;
-}
-    </style>
-
+   
     <script type="text/javascript">
 
-        function clearProgressBar() {
-            $('#tstprogress').css('width', 10 + '%').attr('aria-valuenow', 10).text(10);
-        }
-
         function setProgressBarValue(value,text) {
-            $('#tstprogress').css('width', value + '%').attr('aria-valuenow', value).text(text+'%');
+            $('#progress').css('width', value + '%').attr('aria-valuenow', value).text(text + '%');
         }
 
         $(document).ready(function () {            
-
-
-
-           // $("#tstprogress").addClass('animate');
-
-            $("#btnReset").on('click', function (e) {
+       
+            $("#btnreset").on('click', function (e) {
                 console.log('reset');
-                setProgressBarValue(0, '');
-                $("#tstprogress").fadeOut(2000);
-                $("#dbprogressload").fadeOut(2000);
+                setProgressBarValue(0, '');              
+                $("#dbprogressload").fadeOut(200);
             });
+
+            $("#dbprogressload").hide();
 
             //$('.progress-bar').each(function () {
             //    var bar_value = $(this).attr('aria-valuenow') + '%';
@@ -110,10 +77,11 @@ h3 {
             $('#submitbtn').on('click', function (e) {
                 e.preventDefault();
 
-                $("#files").append($("#fileUploadProgressTemplate").tmpl());
+                $('#progress').css('width', 0 + '%');
+                $('#progress').attr('aria-valuenow', 0);          
+                $("#dbprogressload").show();
 
-
-                $("#progress").addClass('animate');
+              //  $("#progress").addClass('animate');
 
                 var myFormData = new FormData();
                 var files = $("#fileUpload").get(0).files;
@@ -133,17 +101,17 @@ h3 {
                     data: myFormData,
                     success: function () {
 
-                        console.log('file was upload');
+                        console.log('file was upload');                  
+                        $("#progress").text("Done");
 
-                        $("#progressouter").removeClass("active");
-                        $("#progress").html("Done");
                     },
                     error: function (xhr, status, p3) {
                         console.log(p3);
                     }
                     , complete: function () {
                         // деактивация индикатора
-                        $('#myIndicator').removeClass('active');
+                       // $('#progress').removeClass('active');
+                        $("#dbprogressload").fadeOut(2000);
                     }
                     , xhr: function () {
                         var myXhr = $.ajaxSettings.xhr();
@@ -169,9 +137,12 @@ h3 {
                 if (event.lengthComputable) {
 
                     var percent = Math.floor((event.loaded * 100) / event.total);
-                    console.log(percent + '%');
-
-                    $('#progress').css('width', percent + '%').attr('aria-valuenow', percent).text(percent);
+                
+                  //  $('.progress-bar').css('width', newWidth);
+                  //  $('.progress-bar').attr('aria-valuenow', percent);
+                  //  $('.progress-bar').text(percent);
+                    $('.progress-bar').css('width', percent + '%').attr('aria-valuenow', percent);
+                   
                 }
             }
 
