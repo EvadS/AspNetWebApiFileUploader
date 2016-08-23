@@ -31,9 +31,9 @@
                 <input type="file" multiple size="50" title="Search for a file to add" class="file" name="upload" id="fileUpload" onchange="ValidateSingleInput(this);">
             </div>
 
-            <div class="form-group"> 
+            <div class="form-group">
                 <div class="progress progress-striped active" id="dbprogressload">
-                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"  id="progress" aria-valuemax="100" >                   
+                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" id="progress" aria-valuemax="100">
                     </div>
                 </div>
             </div>
@@ -47,18 +47,18 @@
     </div>
 
 
-   
+
     <script type="text/javascript">
 
-        function setProgressBarValue(value,text) {
+        function setProgressBarValue(value, text) {
             $('#progress').css('width', value + '%').attr('aria-valuenow', value).text(text + '%');
         }
 
-        $(document).ready(function () {            
-       
+        $(document).ready(function () {
+
             $("#btnreset").on('click', function (e) {
                 console.log('reset');
-                setProgressBarValue(0, '');              
+                setProgressBarValue(0, '');
                 $("#dbprogressload").fadeOut(200);
             });
 
@@ -73,15 +73,15 @@
             $("#fileUpload").change(function () {
                 console.log('change');
             });
-            
+
             $('#submitbtn').on('click', function (e) {
                 e.preventDefault();
 
                 $('#progress').css('width', 0 + '%');
-                $('#progress').attr('aria-valuenow', 0);          
+                $('#progress').attr('aria-valuenow', 0);
                 $("#dbprogressload").show();
 
-              //  $("#progress").addClass('animate');
+                //  $("#progress").addClass('animate');
 
                 var myFormData = new FormData();
                 var files = $("#fileUpload").get(0).files;
@@ -101,7 +101,7 @@
                     data: myFormData,
                     success: function () {
 
-                        console.log('file was upload');                  
+                        console.log('file was upload');
                         $("#progress").text("Done");
 
                     },
@@ -110,7 +110,7 @@
                     }
                     , complete: function () {
                         // деактивация индикатора
-                       // $('#progress').removeClass('active');
+                        // $('#progress').removeClass('active');
                         $("#dbprogressload").fadeOut(2000);
                     }
                     , xhr: function () {
@@ -131,18 +131,18 @@
 
                         return myXhr;
                     }
-                });              
+                });
             });
             function progress(event) {
                 if (event.lengthComputable) {
 
                     var percent = Math.floor((event.loaded * 100) / event.total);
-                
-                  //  $('.progress-bar').css('width', newWidth);
-                  //  $('.progress-bar').attr('aria-valuenow', percent);
-                  //  $('.progress-bar').text(percent);
+
+                    //  $('.progress-bar').css('width', newWidth);
+                    //  $('.progress-bar').attr('aria-valuenow', percent);
+                    //  $('.progress-bar').text(percent);
                     $('.progress-bar').css('width', percent + '%').attr('aria-valuenow', percent);
-                   
+
                 }
             }
 
